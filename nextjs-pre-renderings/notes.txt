@@ -1,0 +1,106 @@
+Nextjs notes
+
+getStaticProps | getServerSideProps-> 
+We need to use getStaticProps to get data before loading
+- getStaticProps runs only on server side
+- This function will never run client-side
+- The code we write inside getStaticProps won’t even be included in the js bundle that is sent to the browser
+
+- We can write server side code directly in getStaticProps
+- Access the file system using the fs module or querying a database can be done inside getStaticProps
+- We also don’t  have to worry about the including API keys in getStaticProps as that won’t make it to the browser
+
+- getStaticProps is allowed only in a page and can’t be run from a regular component file
+- It is used only for pre-rendering and not client—side data fetching
+
+- getStaticProps should return a object should contain a props key which is an object
+
+- getStaticProps will run at build time
+- During development, getStaticProps runs on every request
+
+**very important**
+when we created build folder -> 
+and if page contains users page which uses getStaticProps
+* then user.json with user.js (for prefecthing is created)
+* user.html also created if one  directly hit user in route then this html page would be served along with users-chunk (client side is also downloaded)
+* if we run the build with project which container users page which uses getStaticProps and show data,
+
+* but if there is no linkage of users page from main page using link then user.json would not be downloaded(pre-fetched) as there is  no way to navigate to the users page
+* if there is link tag in initial run only user.json along with user-chunk would be downloaded (pre-fetching)
+* if we navigate to users page then no api calls would happens which makes nextjs super fast 
+
+SSG WITH DYNAMIC PARAMETER(getStaticPaths)
+if we have posts -> post-by-id page then we need to use getStaticPaths to define the ids before so that it can be prefetched
+
+
+
+two forms of pre-rendering (lect-31)
+1. static generation
+2. server-side rendering
+
+Static generation-
+- The HTML is statically genrated at build time, the built page is then cached and reused for each request
+- for a dynamic page with getStaticPaths and fallback set to true the page is not generated at build time but is generated on the initial request
+- With incremental static regeration, a page can be regenrated for a request after the revalidation time has elapsed
+- for the most part, the pages are genrated using getStaticProp when you build the project
+
+Problems with static generation
+* we cannot fetch data at request time
+- with not being able to fetch data per request, we run into the problem of stale data
+- let's say we are building a news website
+- the content is very dynamic in the sense that new articles can be published almost very second
+- getStaticProps will fetch the news at build time which is not suitable at allowed
+- getStaticPaths will help fetch the data on the inital request but it is then cached for subsequent requests
+- incremental static regenration(ISR) can help but if revalidate is 1 second, we still might not always see the most up to date news when the regenration is happening
+- rather fetch the data on the client side by making a get request from the component, bt no SEO
+
+* we dont get acces to the incoming request
+- problem when the data that needs to the fetchedis specific to a user
+- let day we are building a website similar to twitter
+- as a user, I should be able to see tweets that are personalized based on my interests
+- the tweets that i see also need to be SEO friendly as it is public content that anyone in the world can see
+- we could do it client side in useffect for example bt that means again we will miss out on SEO
+
+Server-side Rendering (SSR)
+- SSR is a form of pre-rendering when the HTML is genrated at request time
+- SSR is required when you need to fetch data per request and also when you need to fetch personalized data keeping in mind SEO
+
+How ?
+using getServerSideProps
+
+Two Forms of pre-rendering(lect-36)
+Static generation
+Server side generation
+
+How to fetch data
+getStaticProps
+getServerSideProps
+
+* We might not always want to pre-load pages
+ex- user-dashbaord
+as it is private, and behind the login screen, seo is not required
+then we can use CLIENT-SIDE RENDERING
+
+* Pre-rendering & Data fetching summary (lect-39)
+- Pre-rendering referes tot eh process of generating HTML in advance which resuslts in better perofomance and SEO.
+- Next JS supports two forms of pre-rendering- Static generation(SSR) & Server-Side Rendering(SSR)
+
+Static generation -
+- A method of pre-rendering where the HTML pages are generated at build time
+- Pages can be built once, cached by CDN and served to clients almost intantly
+ex- Marketing or blogging suitable
+- For a normal page, use getStaticProps function to feth the data ahead of time
+- For a dynamic page, you also need the getStaticPaths function
+- fallback: false | true | blocking
+- pages cannt be updated without a full re-build
+- Incremental Side generation
+
+Server-side generation -
+- Fetch data at request time
+- Personalize data based on user information in the incoming request
+- Ex-> News lsiting page
+- getServerSideProps fucntion helps with SSR data fetching
+- Shallow routing - Routing without calling getStaticProps/getServerSideProps
+
+
+21- last text white 26, 27(imp) text, 28 text
